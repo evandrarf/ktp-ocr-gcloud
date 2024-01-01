@@ -34,31 +34,38 @@ const port = 3000;
 
 app.post("/get-nik", (req, res) => {
   upload.single("file")(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      res.status(400).send({
-        status: "error",
-        message: err,
-      });
-    } else if (err) {
-      res.status(400).send({
-        status: "error",
-        message: err,
-      });
-    } else {
-      const imagePath = req.file.path;
-      checkNik(imagePath)
-        .then((nik) => {
-          res.status(200).send({
-            status: "success",
-            nik: nik,
-          });
-        })
-        .catch((err) => {
-          res.status(400).send({
-            status: "error",
-            message: err,
-          });
+    try {
+      if (err instanceof multer.MulterError) {
+        res.status(400).send({
+          status: "error",
+          message: err,
         });
+      } else if (err) {
+        res.status(400).send({
+          status: "error",
+          message: err,
+        });
+      } else {
+        const imagePath = req.file.path;
+        checkNik(imagePath)
+          .then((nik) => {
+            res.status(200).send({
+              status: "success",
+              nik: nik,
+            });
+          })
+          .catch((err) => {
+            res.status(400).send({
+              status: "error",
+              message: err,
+            });
+          });
+      }
+    } catch (error) {
+      return res.status(400).send({
+        status: "error",
+        message: error,
+      });
     }
   });
 });
